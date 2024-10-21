@@ -19,7 +19,7 @@ module.exports = async (srv) => {
                     return (`Material ${item.material} não encontrado`);
                 }
 
-                // Verifica se a quantidade pedida é maior que a quantidade disponível em stock
+                // Verifica se a quantidade pedida é maior que a quantidade disponível em stocksss
                 if (item.qtd > material.stock) {
                     return (`Quantidade pedida (${item.qtd}) ultrapasa o stock disponível (${material.stock}) para o material ${material.name}`);
                 }

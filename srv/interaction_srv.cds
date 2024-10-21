@@ -28,8 +28,9 @@ service Sales.service {
     @readonly: true
     entity salesItems as projection on salesK.SalesItems;
   
-    // Função que recebe Sales como input e retorna uma String
+    // Função que recebe Sales como input e retorna uma Stringsasa
     function create_salesorder(req: Sales) returns String;
 
 
 }
+   
