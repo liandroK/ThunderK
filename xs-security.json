@@ -1,0 +1,21 @@
+{
+  "xsappname": "sales",
+  "tenant-mode": "dedicated",
+  "scopes": [],
+  "attributes": [],
+  "role-templates": [],
+  "authorities-inheritance": false,
+  "oauth2-configuration": {
+    "credential-types": [
+      "binding-secret",
+      "x509"
+    ],
+    "redirect-uris": [
+      "https://*.applicationstudio.cloud.sap/**",
+      "https://*.hana.ondemand.com/**",
+      "https://*.us10-001.hana.ondemand.com",
+      "https://faccdcd8trial-dev-sales.cfapps.us10-001.hana.ondemand.com/**",
+      "https://faccdcd8trial-dev-sales-srv.cfapps.us10-001.hana.ondemand.com/**"
+    ]
+  }
+}
