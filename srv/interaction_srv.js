@@ -86,13 +86,13 @@ module.exports = async (srv) => {
         try {
             const result = await next(); 
             if (!result || result.length === 0) {
-                req.reject(400, 'Aprovador não encontrado.');
+                req.reject(200, 'Aprovador não encontrado.');
             } else {
                 return result; 
             }
         } catch (error) {
             
-            req.reject(500, 'Internal server error.');
+            req.reject(200, 'Internal server error.');
         }
     });
     
