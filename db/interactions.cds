@@ -8,7 +8,7 @@ type Email    : String(320);
 type Status   : String(255);
 type URL      : String(1024);
 
-entity Approvers : cuid {
+entity Approvers {
     key vendor: Email;
     approver: Email;
 };

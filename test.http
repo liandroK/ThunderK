@@ -1,0 +1,25 @@
+### read People
+GET http://localhost:4004/odata/v4/service/sales
+
+### create People
+POST http://localhost:4004/odata/v4/service/create_salesorder
+Content-Type: application/json
+
+{
+  "sales": {
+    "email_vendor": "romeritomendes",
+    "email_comprador": "comprador@example.com",
+    "items": [
+      {
+        "material": "Material A",
+        "qtd": 5,
+        "price_unit": 100
+      },
+      {
+        "material": "Material B",
+        "qtd": 3,
+        "price_unit": 50
+      }
+    ]
+  }
+}

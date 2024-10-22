@@ -5,14 +5,18 @@ module.exports = async (srv) => {
     const { Approvers, Sales, SalesItems, Material } = db.entities;
 
     srv.on('create_salesorder', async (req) => {
-        const { email_vendor, email_comprador, items } = req.data;
 
-        if (!email_vendor || !email_comprador || !items || items.length === 0) {
-            return 'Dados de entrada inválidos.';
-          }
 
+
+
+
+        const { email_vendor, email_comprador, items } = req.data.sales;
+        console.log(email_vendor)
+        
         // Obter o aprovador
         const approver = await SELECT.from(Approvers).where({ vendor: email_vendor });
+        
+        console.log(approver)
         if (!approver || approver.length === 0) {
             return `Aprovador com email ${email_vendor} não encontrado.`;
         }
@@ -73,5 +77,14 @@ module.exports = async (srv) => {
 
         return `Sales order ${result.ID} created successfully!`;
     });
+
+    srv.on('updateStatus', async req => {
+     return await UPDATE(Sales)
+            .set({status: req.data.status})
+            .where({ID: req.data.id});
+    })
 };
+
+
+
 

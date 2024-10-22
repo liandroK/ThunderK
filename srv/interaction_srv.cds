@@ -5,8 +5,8 @@ service Sales.service {
     type Email: String(320);
   
     type Sales {
-        comprador   : Email;
-        vendor      : Email;
+        email_comprador   : Email;
+        email_vendor      : Email;
         items       : many SalesItems;  
     };
 
@@ -16,10 +16,10 @@ service Sales.service {
         qtd         : Integer;
     };
 
-    @odata.draft.enabled: true
+    @odata.draft.bypass: true
     entity aprovadores as projection on salesK.Approvers;
     
-    @odata.draft.enabled: true
+    @odata.draft.bypass: true
     entity artigos as select from salesK.Materials;
 
     @readonly: true
@@ -29,8 +29,8 @@ service Sales.service {
     entity salesItems as projection on salesK.SalesItems;
   
     // Função que recebe Sales como input e retorna uma Stringsasa
-    function create_salesorder(req: Sales) returns String;
+    function create_salesorder(sales: Sales) returns String;
 
-
+    action updateStatus(id: UUID, status: String) returns Boolean;
 }
    
