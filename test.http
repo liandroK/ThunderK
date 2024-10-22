@@ -1,5 +1,5 @@
 ### read People
-GET http://localhost:4004/odata/v4/service/sales
+GET http://localhost:4004/odata/v4/service/aprovadores('romer')
 
 ### create People
 POST http://localhost:4004/odata/v4/service/create_salesorder
@@ -11,14 +11,8 @@ Content-Type: application/json
     "email_comprador": "comprador@example.com",
     "items": [
       {
-        "material": "Material A",
-        "qtd": 5,
-        "price_unit": 100
-      },
-      {
-        "material": "Material B",
-        "qtd": 3,
-        "price_unit": 50
+        "material": "teste",
+        "qtd": 1
       }
     ]
   }

@@ -12,7 +12,6 @@ service Sales.service {
 
     type SalesItems {
         material    : String;
-        price_unit  : Decimal(10, 2);
         qtd         : Integer;
     };
 

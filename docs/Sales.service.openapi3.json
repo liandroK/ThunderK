@@ -103,18 +103,10 @@
               "items": {
                 "type": "string",
                 "enum": [
-                  "ID",
-                  "ID desc",
                   "vendor",
                   "vendor desc",
                   "approver",
-                  "approver desc",
-                  "IsActiveEntity",
-                  "IsActiveEntity desc",
-                  "HasActiveEntity",
-                  "HasActiveEntity desc",
-                  "HasDraftEntity",
-                  "HasDraftEntity desc"
+                  "approver desc"
                 ]
               }
             }
@@ -130,30 +122,8 @@
               "items": {
                 "type": "string",
                 "enum": [
-                  "ID",
                   "vendor",
-                  "approver",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
+                  "approver"
                 ]
               }
             }
@@ -220,27 +190,16 @@
         }
       }
     },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')": {
+    "/aprovadores('{vendor}')": {
       "parameters": [
         {
-          "description": "key: ID",
+          "description": "key: vendor",
           "in": "path",
-          "name": "ID",
+          "name": "vendor",
           "required": true,
           "schema": {
             "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
+            "maxLength": 320
           }
         }
       ],
@@ -261,30 +220,8 @@
               "items": {
                 "type": "string",
                 "enum": [
-                  "ID",
                   "vendor",
-                  "approver",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
+                  "approver"
                 ]
               }
             }
@@ -346,573 +283,6 @@
         }
       }
     },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/DraftAdministrativeData": {
-      "parameters": [
-        {
-          "description": "key: ID",
-          "in": "path",
-          "name": "ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      ],
-      "get": {
-        "summary": "Retrieves draft administrative data of a aprovadore.",
-        "tags": [
-          "aprovadores"
-        ],
-        "parameters": [
-          {
-            "name": "$select",
-            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "DraftUUID",
-                  "CreationDateTime",
-                  "CreatedByUser",
-                  "DraftIsCreatedByMe",
-                  "LastChangeDateTime",
-                  "LastChangedByUser",
-                  "InProcessByUser",
-                  "DraftIsProcessedByMe"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved draft administrative data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Changes draft administrative data of a aprovadore.",
-        "tags": [
-          "aprovadores"
-        ],
-        "requestBody": {
-          "description": "New property values",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-update"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Deletes draft administrative data of a aprovadore.",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ]
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity": {
-      "parameters": [
-        {
-          "description": "key: ID",
-          "in": "path",
-          "name": "ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      ],
-      "get": {
-        "summary": "Retrieves sibling entity of a aprovadore.",
-        "tags": [
-          "aprovadores"
-        ],
-        "parameters": [
-          {
-            "name": "$select",
-            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "ID",
-                  "vendor",
-                  "approver",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved sibling entity",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Sales.service.aprovadores"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ]
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/aprovadores(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "aprovadores"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/artigos": {
       "get": {
         "summary": "Retrieves a list of artigos.",
@@ -962,13 +332,7 @@
                   "stock",
                   "stock desc",
                   "url_imagem",
-                  "url_imagem desc",
-                  "IsActiveEntity",
-                  "IsActiveEntity desc",
-                  "HasActiveEntity",
-                  "HasActiveEntity desc",
-                  "HasDraftEntity",
-                  "HasDraftEntity desc"
+                  "url_imagem desc"
                 ]
               }
             }
@@ -989,28 +353,7 @@
                   "description",
                   "price",
                   "stock",
-                  "url_imagem",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
+                  "url_imagem"
                 ]
               }
             }
@@ -1077,7 +420,7 @@
         }
       }
     },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')": {
+    "/artigos({ID})": {
       "parameters": [
         {
           "description": "key: ID",
@@ -1088,16 +431,6 @@
             "type": "string",
             "format": "uuid",
             "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
           }
         }
       ],
@@ -1123,28 +456,7 @@
                   "description",
                   "price",
                   "stock",
-                  "url_imagem",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
+                  "url_imagem"
                 ]
               }
             }
@@ -1206,576 +518,6 @@
         }
       }
     },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/DraftAdministrativeData": {
-      "parameters": [
-        {
-          "description": "key: ID",
-          "in": "path",
-          "name": "ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      ],
-      "get": {
-        "summary": "Retrieves draft administrative data of a artigo.",
-        "tags": [
-          "artigos"
-        ],
-        "parameters": [
-          {
-            "name": "$select",
-            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "DraftUUID",
-                  "CreationDateTime",
-                  "CreatedByUser",
-                  "DraftIsCreatedByMe",
-                  "LastChangeDateTime",
-                  "LastChangedByUser",
-                  "InProcessByUser",
-                  "DraftIsProcessedByMe"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved draft administrative data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      },
-      "patch": {
-        "summary": "Changes draft administrative data of a artigo.",
-        "tags": [
-          "artigos"
-        ],
-        "requestBody": {
-          "description": "New property values",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-update"
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      },
-      "delete": {
-        "summary": "Deletes draft administrative data of a artigo.",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "204": {
-            "description": "Success"
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ]
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity": {
-      "parameters": [
-        {
-          "description": "key: ID",
-          "in": "path",
-          "name": "ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        },
-        {
-          "description": "key: IsActiveEntity",
-          "in": "path",
-          "name": "IsActiveEntity",
-          "required": true,
-          "schema": {
-            "type": "boolean",
-            "default": true
-          }
-        }
-      ],
-      "get": {
-        "summary": "Retrieves sibling entity of a artigo.",
-        "tags": [
-          "artigos"
-        ],
-        "parameters": [
-          {
-            "name": "$select",
-            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "ID",
-                  "name",
-                  "description",
-                  "price",
-                  "stock",
-                  "url_imagem",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved sibling entity",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Sales.service.artigos"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ]
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/artigos(ID={ID},IsActiveEntity='{IsActiveEntity}')/SiblingEntity/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "artigos"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          },
-          {
-            "description": "key: IsActiveEntity",
-            "in": "path",
-            "name": "IsActiveEntity",
-            "required": true,
-            "schema": {
-              "type": "boolean",
-              "default": true
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/create_salesorder": {
       "get": {
         "summary": "Invokes function create_salesorder",
@@ -1786,7 +528,7 @@
           {
             "required": true,
             "in": "query",
-            "name": "req",
+            "name": "sales",
             "schema": {
               "type": "string"
             },
@@ -1859,10 +601,8 @@
                   "ID desc",
                   "comprador",
                   "comprador desc",
-                  "vendor_ID",
-                  "vendor_ID desc",
-                  "email_auth",
-                  "email_auth desc",
+                  "vendor",
+                  "vendor desc",
                   "status",
                   "status desc",
                   "valor_total",
@@ -1886,8 +626,7 @@
                 "enum": [
                   "ID",
                   "comprador",
-                  "vendor_ID",
-                  "email_auth",
+                  "vendor",
                   "status",
                   "valor_total",
                   "valor_iva"
@@ -1907,7 +646,6 @@
                 "type": "string",
                 "enum": [
                   "*",
-                  "vendor",
                   "items"
                 ]
               }
@@ -1976,8 +714,7 @@
                 "enum": [
                   "ID",
                   "comprador",
-                  "vendor_ID",
-                  "email_auth",
+                  "vendor",
                   "status",
                   "valor_total",
                   "valor_iva"
@@ -1997,7 +734,6 @@
                 "type": "string",
                 "enum": [
                   "*",
-                  "vendor",
                   "items"
                 ]
               }
@@ -2160,239 +896,6 @@
           },
           "4XX": {
             "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/sales({ID})/vendor": {
-      "parameters": [
-        {
-          "description": "key: ID",
-          "in": "path",
-          "name": "ID",
-          "required": true,
-          "schema": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          }
-        }
-      ],
-      "get": {
-        "summary": "Retrieves vendor of a sale.",
-        "tags": [
-          "sales",
-          "aprovadores"
-        ],
-        "parameters": [
-          {
-            "name": "$select",
-            "description": "Select properties to be returned, see [Select](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionselect)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "ID",
-                  "vendor",
-                  "approver",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
-                ]
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Retrieved vendor",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Sales.service.aprovadores"
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/sales({ID})/vendor/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "sales"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ]
-      }
-    },
-    "/sales({ID})/vendor/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "sales"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sales({ID})/vendor/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "sales"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.aprovadores"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -2642,28 +1145,7 @@
                   "description",
                   "price",
                   "stock",
-                  "url_imagem",
-                  "IsActiveEntity",
-                  "HasActiveEntity",
-                  "HasDraftEntity"
-                ]
-              }
-            }
-          },
-          {
-            "name": "$expand",
-            "description": "The value of $expand query option is a comma-separated list of navigation property names, stream property names, or $value indicating the stream content of a media-entity. The corresponding related entities and stream values will be represented inline, see [Expand](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#sec_SystemQueryOptionexpand)",
-            "in": "query",
-            "explode": false,
-            "schema": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "enum": [
-                  "*",
-                  "DraftAdministrativeData",
-                  "SiblingEntity"
+                  "url_imagem"
                 ]
               }
             }
@@ -2682,161 +1164,6 @@
           },
           "4XX": {
             "$ref": "#/components/responses/error"
-          }
-        }
-      }
-    },
-    "/salesItems({ID})/material/Sales.service.draftActivate": {
-      "post": {
-        "summary": "Invokes action draftActivate",
-        "tags": [
-          "salesItems"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ]
-      }
-    },
-    "/salesItems({ID})/material/Sales.service.draftEdit": {
-      "post": {
-        "summary": "Invokes action draftEdit",
-        "tags": [
-          "salesItems"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "PreserveChanges": {
-                    "type": "boolean",
-                    "nullable": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/salesItems({ID})/material/Sales.service.draftPrepare": {
-      "post": {
-        "summary": "Invokes action draftPrepare",
-        "tags": [
-          "salesItems"
-        ],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Sales.service.artigos"
-                    }
-                  ],
-                  "nullable": true
-                }
-              }
-            }
-          },
-          "4XX": {
-            "$ref": "#/components/responses/error"
-          }
-        },
-        "parameters": [
-          {
-            "description": "key: ID",
-            "in": "path",
-            "name": "ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "example": "01234567-89ab-cdef-0123-456789abcdef"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "Action parameters",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "SideEffectsQualifier": {
-                    "type": "string",
-                    "nullable": true
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -2875,8 +1202,7 @@
                 "enum": [
                   "ID",
                   "comprador",
-                  "vendor_ID",
-                  "email_auth",
+                  "vendor",
                   "status",
                   "valor_total",
                   "valor_iva"
@@ -2896,7 +1222,6 @@
                 "type": "string",
                 "enum": [
                   "*",
-                  "vendor",
                   "items"
                 ]
               }
@@ -2919,188 +1244,72 @@
           }
         }
       }
+    },
+    "/updateStatus": {
+      "post": {
+        "summary": "Invokes action updateStatus",
+        "tags": [
+          "Service Operations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "boolean",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "4XX": {
+            "$ref": "#/components/responses/error"
+          }
+        },
+        "requestBody": {
+          "description": "Action parameters",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "example": "01234567-89ab-cdef-0123-456789abcdef",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "Sales.service.DraftAdministrativeData": {
-        "title": "DraftAdministrativeData",
-        "type": "object",
-        "properties": {
-          "DraftUUID": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          },
-          "CreationDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "CreatedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsCreatedByMe": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "LastChangeDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "LastChangedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "InProcessByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsProcessedByMe": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "Sales.service.DraftAdministrativeData-create": {
-        "title": "DraftAdministrativeData (for create)",
-        "type": "object",
-        "properties": {
-          "DraftUUID": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          },
-          "CreationDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "CreatedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsCreatedByMe": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "LastChangeDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "LastChangedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "InProcessByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsProcessedByMe": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
-      "Sales.service.DraftAdministrativeData-update": {
-        "title": "DraftAdministrativeData (for update)",
-        "type": "object",
-        "properties": {
-          "CreationDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "CreatedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsCreatedByMe": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "LastChangeDateTime": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2017-04-13T15:51:04.0000000Z",
-            "nullable": true
-          },
-          "LastChangedByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "InProcessByUser": {
-            "type": "string",
-            "maxLength": 256,
-            "nullable": true
-          },
-          "DraftIsProcessedByMe": {
-            "type": "boolean",
-            "nullable": true
-          }
-        }
-      },
       "Sales.service.aprovadores": {
         "title": "aprovadores",
         "type": "object",
         "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          },
           "vendor": {
             "type": "string",
-            "maxLength": 320,
-            "nullable": true
+            "maxLength": 320
           },
           "approver": {
             "type": "string",
             "maxLength": 320,
-            "nullable": true
-          },
-          "IsActiveEntity": {
-            "type": "boolean",
-            "default": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData"
-              }
-            ],
-            "nullable": true
-          },
-          "SiblingEntity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.aprovadores"
-              }
-            ],
             "nullable": true
           }
         }
@@ -3109,74 +1318,27 @@
         "title": "aprovadores (for create)",
         "type": "object",
         "properties": {
-          "ID": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef"
-          },
           "vendor": {
             "type": "string",
-            "maxLength": 320,
-            "nullable": true
+            "maxLength": 320
           },
           "approver": {
             "type": "string",
             "maxLength": 320,
             "nullable": true
-          },
-          "IsActiveEntity": {
-            "type": "boolean",
-            "default": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-create"
-              }
-            ],
-            "nullable": true
           }
         },
         "required": [
-          "IsActiveEntity"
+          "vendor"
         ]
       },
       "Sales.service.aprovadores-update": {
         "title": "aprovadores (for update)",
         "type": "object",
         "properties": {
-          "vendor": {
-            "type": "string",
-            "maxLength": 320,
-            "nullable": true
-          },
           "approver": {
             "type": "string",
             "maxLength": 320,
-            "nullable": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-create"
-              }
-            ],
             "nullable": true
           }
         }
@@ -3227,34 +1389,6 @@
             "type": "string",
             "maxLength": 1024,
             "nullable": true
-          },
-          "IsActiveEntity": {
-            "type": "boolean",
-            "default": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData"
-              }
-            ],
-            "nullable": true
-          },
-          "SiblingEntity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.artigos"
-              }
-            ],
-            "nullable": true
           }
         }
       },
@@ -3304,31 +1438,8 @@
             "type": "string",
             "maxLength": 1024,
             "nullable": true
-          },
-          "IsActiveEntity": {
-            "type": "boolean",
-            "default": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-create"
-              }
-            ],
-            "nullable": true
           }
-        },
-        "required": [
-          "IsActiveEntity"
-        ]
+        }
       },
       "Sales.service.artigos-update": {
         "title": "artigos (for update)",
@@ -3371,22 +1482,6 @@
             "type": "string",
             "maxLength": 1024,
             "nullable": true
-          },
-          "HasActiveEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "HasDraftEntity": {
-            "type": "boolean",
-            "default": false
-          },
-          "DraftAdministrativeData": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.DraftAdministrativeData-create"
-              }
-            ],
-            "nullable": true
           }
         }
       },
@@ -3401,24 +1496,10 @@
           },
           "comprador": {
             "type": "string",
-            "maxLength": 255,
+            "maxLength": 320,
             "nullable": true
           },
           "vendor": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Sales.service.aprovadores"
-              }
-            ],
-            "nullable": true
-          },
-          "vendor_ID": {
-            "type": "string",
-            "format": "uuid",
-            "example": "01234567-89ab-cdef-0123-456789abcdef",
-            "nullable": true
-          },
-          "email_auth": {
             "type": "string",
             "maxLength": 320,
             "nullable": true
