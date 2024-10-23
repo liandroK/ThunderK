@@ -1,4 +1,5 @@
 using app.salesK from '../db/interactions';
+using V_GETSALESAPPROVER from '../db/interactions';
 
 service Sales.service {
     
@@ -26,10 +27,16 @@ service Sales.service {
     
     @readonly: true
     entity salesItems as projection on salesK.SalesItems;
+
+    @readonly: true
+    entity getSaleApprover as projection on V_GETSALESAPPROVER;
+
+    function getSalesForPerson(email: Email) returns array of Sales;
   
-    // Função que recebe Sales como input e retorna uma Stringsasa
     function create_salesorder(sales: Sales) returns String;
 
     action updateStatus(id: UUID, status: String) returns Boolean;
+
+    action validateApprovers(vendor: Email, approver: Email) returns Boolean;
 }
    

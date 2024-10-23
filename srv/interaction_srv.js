@@ -2,14 +2,19 @@ const cds = require('@sap/cds');
 
 module.exports = async (srv) => {
     const db = await cds.connect.to('db');
-    const { Approvers, Sales, SalesItems, Materials } = db.entities;
+    const Approvers = db.entities['app.salesK.Approvers'];
+    const Sales = db.entities['app.salesK.Sales'];
+    const SalesItems = db.entities['app.salesK.SalesItems'];
+    const Materials = db.entities['app.salesK.Materials'];
 
+    
     srv.on('create_salesorder', async (req) => {
         const { email_vendor, email_comprador, items } = req.data.sales;
 
+   
         // Obter o aprovador
         const approver = await SELECT.from(Approvers).where({ vendor: email_vendor });
-
+        
         if (!approver || approver.length === 0) {
             return `Aprovador com email ${email_vendor} não encontrado.`;
         }
@@ -18,10 +23,10 @@ module.exports = async (srv) => {
         let valor_total = 0;
         let itemCounter = 0;
         let valor_iva_total = 0;
-
         if (items && items.length > 0) {
             for (const item of items) {
                 const material = await SELECT.one.from(Materials).where({ name: item.material });
+            
                 if (!material) {
                     return (`Material ${item.material} não encontrado`);
                 }
@@ -82,22 +87,99 @@ module.exports = async (srv) => {
             .set({ status: req.data.status })
             .where({ ID: req.data.id });
     })
-    srv.on('READ', 'aprovadores', async (req, next) => {
-        try {
-            const result = await next(); 
-            if (!result || result.length === 0) {
-                req.reject(200, 'Aprovador não encontrado.');
-            } else {
-                return result; 
-            }
-        } catch (error) {
-            
-            req.reject(200, 'Internal server error.');
+
+
+    // Regex para validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Função para validar emails
+    function validateEmail(email) {
+        return emailRegex.test(email);
+    }
+
+    srv.on('validateApprovers', async (req) => {
+        const { vendor, approver } = req.data;
+
+        if (!validateEmail(vendor)) {
+            return req.error(400, `O email do vendedor '${vendor}' não é válido.`);
         }
+
+        if (!validateEmail(approver)) {
+            return req.error(400, `O email do aprovador '${approver}' não é válido.`);
+        }
+
+        return true; // Retorna true se ambos os emails forem válidos
+    });
+
+    srv.on('READ', 'aprovadores', async (req) => {
+        const { approver, vendor } = req.query;
+
+        // Verifica se o pedido é para procurar por "vendor" ou "approver"
+        if (vendor) {
+            const vendorFound = await SELECT.one.from(Approvers).where({ vendor });
+            if (!vendorFound) {
+                return ({
+                    code: 400,
+                    message: `O vendor com email ${vendor} não foi encontrado.`,
+                    status: 418 // Status personalizado
+                });
+            }
+            return vendorFound;
+        }
+
+        if (approver) {
+            const approverFound = await SELECT.one.from(Approvers).where({ approver });
+            if (!approverFound) {
+                return ({
+                    code: 400,
+                    message: `O aprovador com email ${approver} não foi encontrado.`,
+                    status: 418  // Status personalizado
+                });
+            }
+            return approverFound;
+        }
+
+        // // Caso nenhum dos parâmetros seja encontrado
+        // return ({
+        //     code: 200,
+        //     message: 'Parâmetro "vendor" ou "approver" em falta.',
+        //     status: 200  // Status para parâmetro inválido
+        // });
+        return await SELECT.from(Approvers);
     });
     
+    srv.on('artigos', async (req) => {
+        const { $filter } = req.query;
+    
+        // Se houver um filtro e o filtro estiver a comparar o campo 'name'
+        if ($filter) {
+            const filterParts = $filter.split("eq");
+            if (filterParts.length === 2) {
+                const fieldName = filterParts[0].trim();
+                const fieldValue = filterParts[1].trim().replace(/'/g, ''); // Remove as aspas do valor
+    
+                if (fieldName === "name") {
+                    // Faz a consulta case insensitive
+                    const materialsFound = await SELECT.from(Materials).where(`LOWER(name) = '${fieldValue.toLowerCase()}'`);
+    
+                    if (!materialsFound || materialsFound.length === 0) {
+                        return {
+                            code: 400,
+                            message: `O material com nome '${fieldValue}' não foi encontrado.`,
+                            status: 418 // Status personalizado
+                        };
+                    }
+    
+                    return materialsFound;
+                }
+            }
+        }
+    
+        return await SELECT.from(Materials);
+    });    
+
 };
 
 
 
-
+//                const material = await SELECT.one.from(Materials).where(`LOWER(name) = '${item.material.toLowerCase()}'` );

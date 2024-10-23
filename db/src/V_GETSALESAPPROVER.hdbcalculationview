@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" id="V_GETSALESAPPROVER" applyPrivilegeType="NONE" dataCategory="DIMENSION" dimensionType="STANDARD" schemaVersion="3.0" hierarchyGeneration="SQL" outputViewType="Projection" cacheInvalidationPeriod="NONE" enforceSqlExecution="true" application="BAS">
+<descriptions defaultDescription="V_getSalesApprover"/>
+<localVariables/>
+<variableMappings/>
+<dataSources>
+  <DataSource id="APP_SALESK_SALES">
+    <resourceUri>APP_SALESK_SALES</resourceUri>
+  </DataSource>
+  <DataSource id="APP_SALESK_APPROVERS">
+    <resourceUri>APP_SALESK_APPROVERS</resourceUri>
+  </DataSource>
+</dataSources>
+<snapshotProcedures/>
+<calculationViews>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+    <viewAttributes>
+      <viewAttribute id="SALESID"/>
+      <viewAttribute id="COMPRADOR"/>
+      <viewAttribute id="VENDOR"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="VALOR_TOTAL" aggregationType="sum"/>
+      <viewAttribute id="VALOR_IVA" aggregationType="sum"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="APP_SALESK_SALES"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2">
+    <viewAttributes>
+      <viewAttribute id="VENDOR"/>
+      <viewAttribute id="APPROVER"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <restrictedViewAttributes/>
+    <input node="APP_SALESK_APPROVERS"/>
+  </calculationView>
+  <calculationView xsi:type="Calculation:JoinView" id="Join_1" cardinality="CN_N" joinType="inner">
+    <viewAttributes>
+      <viewAttribute id="APPROVER"/>
+      <viewAttribute id="SALESID"/>
+      <viewAttribute id="COMPRADOR"/>
+      <viewAttribute id="VENDOR"/>
+      <viewAttribute id="STATUS"/>
+      <viewAttribute id="VALOR_TOTAL"/>
+      <viewAttribute id="VALOR_IVA"/>
+      <viewAttribute hidden="true" id="JOIN$VENDOR$VENDOR"/>
+    </viewAttributes>
+    <calculatedViewAttributes/>
+    <input node="Aggregation_2">
+      <mapping xsi:type="Calculation:AttributeMapping" target="APPROVER" source="APPROVER"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VENDOR$VENDOR" source="VENDOR"/>
+    </input>
+    <input node="Aggregation_1">
+      <mapping xsi:type="Calculation:AttributeMapping" target="SALESID" source="SALESID"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="COMPRADOR" source="COMPRADOR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VENDOR" source="VENDOR"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="STATUS" source="STATUS"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALOR_TOTAL" source="VALOR_TOTAL"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="VALOR_IVA" source="VALOR_IVA"/>
+      <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VENDOR$VENDOR" source="VENDOR"/>
+    </input>
+    <joinAttribute name="JOIN$VENDOR$VENDOR"/>
+  </calculationView>
+</calculationViews>
+
+<logicalModel id="Join_1">
+  <attributes>
+    <attribute id="APPROVER" order="1" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="APPROVER"/>
+      <keyMapping columnObjectName="Join_1" columnName="APPROVER"/>
+    </attribute>
+    <attribute id="SALESID" order="2" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="SALESID"/>
+      <keyMapping columnObjectName="Join_1" columnName="SALESID"/>
+    </attribute>
+    <attribute id="COMPRADOR" order="3" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="COMPRADOR"/>
+      <keyMapping columnObjectName="Join_1" columnName="COMPRADOR"/>
+    </attribute>
+    <attribute id="VENDOR" order="4" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="VENDOR"/>
+      <keyMapping columnObjectName="Join_1" columnName="VENDOR"/>
+    </attribute>
+    <attribute id="STATUS" order="5" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="STATUS"/>
+      <keyMapping columnObjectName="Join_1" columnName="STATUS"/>
+    </attribute>
+    <attribute id="VALOR_TOTAL" order="6" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="VALOR_TOTAL"/>
+      <keyMapping columnObjectName="Join_1" columnName="VALOR_TOTAL"/>
+    </attribute>
+    <attribute id="VALOR_IVA" order="7" displayAttribute="false" attributeHierarchyActive="false">
+      <descriptions defaultDescription="VALOR_IVA"/>
+      <keyMapping columnObjectName="Join_1" columnName="VALOR_IVA"/>
+    </attribute>
+  </attributes>
+  <calculatedAttributes/>
+  <baseMeasures/>
+  <calculatedMeasures/>
+  <restrictedMeasures/>
+</logicalModel>
+<layout>
+  <shapes>
+    <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+      <upperLeftCorner x="40" y="85"/>
+    </shape>
+    
+  
+    <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="-230" y="259"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="450" y="259"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+  
+    <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+      <upperLeftCorner x="100" y="169"/>
+      <rectangleSize height="30" width="160"/>
+    </shape>
+    <shape modelObjectName="Aggregation_2" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="651" y="62"/>
+      <rectangleSize width="148"/>
+    </shape>
+    <shape modelObjectName="Aggregation_1" modelObjectNameSpace="Join_1" modelObjectType="JoinNodeInput">
+      <upperLeftCorner x="320" y="30"/>
+      <rectangleSize width="148"/>
+    </shape></shapes>
+</layout>
+</Calculation:scenario>
