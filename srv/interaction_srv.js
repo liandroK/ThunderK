@@ -148,35 +148,7 @@ module.exports = async (srv) => {
         return await SELECT.from(Approvers);
     });
     
-    srv.on('artigos', async (req) => {
-        const { $filter } = req.query;
-    
-        // Se houver um filtro e o filtro estiver a comparar o campo 'name'
-        if ($filter) {
-            const filterParts = $filter.split("eq");
-            if (filterParts.length === 2) {
-                const fieldName = filterParts[0].trim();
-                const fieldValue = filterParts[1].trim().replace(/'/g, ''); // Remove as aspas do valor
-    
-                if (fieldName === "name") {
-                    // Faz a consulta case insensitive
-                    const materialsFound = await SELECT.from(Materials).where(`LOWER(name) = '${fieldValue.toLowerCase()}'`);
-    
-                    if (!materialsFound || materialsFound.length === 0) {
-                        return {
-                            code: 400,
-                            message: `O material com nome '${fieldValue}' não foi encontrado.`,
-                            status: 418 // Status personalizado
-                        };
-                    }
-    
-                    return materialsFound;
-                }
-            }
-        }
-    
-        return await SELECT.from(Materials);
-    });    
+      
 
 };
 
