@@ -87,7 +87,7 @@ module.exports = async (srv) => {
 
         // Insere a nova sale
         const result = await INSERT(newSale).into(Sales);
-        return `Sales order ${result.ID} criada com sucesso!`;
+        return `Sales order ${newSale.salesID} criada com sucesso!`;
     });
 
     // Handler para atualizar o status de uma venda
@@ -95,10 +95,29 @@ module.exports = async (srv) => {
         return await UPDATE(Sales).set({ status: req.data.status }).where({ ID: req.data.id });
     });
 
+    async function triggerDestination() {
+        try {
+            const SPA_API = await cds.connect.to('auth_api');
+            const result = await SPA_API.send(
+                'GET',
+                '/Users',
+                { "Content-Type": "application/json" }
+            );
+    
+            if (!result || !result.resources) {
+                throw new Error('A resposta da API está mal formatada ou não contém recursos.');
+            }
+    
+            return result.resources;  
+        } catch (e) {
+            throw new Error('Falha ao conectar à API de autenticação.');
+        }
+    }
+    
     srv.on('CREATE', 'aprovadores', async (req) => {
         const { vendor, approver } = req.data;
     
-        // Valida os emails
+       
         if (!validateEmail(vendor)) {
             return req.error(400, `O email do vendedor '${vendor}' não é válido.`);
         }
@@ -106,15 +125,33 @@ module.exports = async (srv) => {
         if (!validateEmail(approver)) {
             return req.error(400, `O email do aprovador '${approver}' não é válido.`);
         }
-
+    
         // Verifica se o email do vendor e do approver são iguais
         if (vendor === approver) {
             return req.error(400, 'O email do vendedor e do aprovador não podem ser iguais.');
         }
     
-        // Prossegue com a criação do registo se os emails forem válidos
-        return req.data;
+        // Chama a função que liga à API SAP
+        try {
+            const users = await triggerDestination(); 
+    
+            // Verifica se existe algum utilizador com userName igual ao approver
+            const userExists = users.some(user => user.userName === approver);
+    
+            if (userExists) {
+                // Se o utilizador existir, prossegue com a criação do registo
+                return req.data;
+            } else {
+                // Caso contrário, retorna um erro
+                return req.error(400, `O aprovador '${approver}' não existe na API SAP.`);
+            }
+    
+        } catch (e) {
+            // Caso ocorra um erro ao conectar à API
+            return req.error(500, 'Erro ao conectar à API de autenticação.');
+        }
     });
+    
 
     // Handler para leitura de aprovadores
     srv.on('READ', 'aprovadores', async (req) => {

@@ -7,11 +7,11 @@ Content-Type: application/json
 
 {
   "sales": {
-    "email_vendor": "romeritomendes",
-    "email_comprador": "comprador@example.com",
+    "email_vendor": "rodrigo@kpmg.com",
+    "email_comprador": "liandrocruz@kpmg.com",
     "items": [
       {
-        "material": "teste",
+        "material": "Tablet",
         "qtd": 1
       }
     ]
@@ -24,6 +24,6 @@ POST http://localhost:4004/odata/v4/service/aprovadores
 Content-Type: application/json
 
 {
-  "vendor": "liandrocruz@outlook.pt",
-  "approver": "liandrocruz@outlook.pt"
+  "vendor": "liandrocruz1@kpmg.com",
+  "approver": "bernadettefernandes1@kpmg.com"
 }

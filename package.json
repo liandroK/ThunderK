@@ -7,11 +7,12 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
+    "@sap-cloud-sdk/http-client": "^3.22.2",
     "@sap/cds": "^8",
     "@sap/cds-common-content": "^2.1.0",
     "@sap/xssec": "^4",
     "express": "^4",
-    "rimraf":"^5.0.5"
+    "rimraf": "^5.0.5"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.6",
@@ -30,12 +31,19 @@
       "db": {
         "kind": "hana",
         "credentials": {
-        "database": ":memory"
+          "database": ":memory"
+        }
+      },
+      "auth_api": {
+      "kind": "rest",
+      "credentials": {
+        "destination": "auth_api"
       }
-      }
+    }
     },
     "sql": {
       "native_hana_associations": true
     }
+    
   }
 }
