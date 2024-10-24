@@ -12,7 +12,7 @@ service Sales.service {
     };
 
     type SalesItems {
-        material    : String;
+        material    : UUID;
         qtd         : Integer;
     };
 

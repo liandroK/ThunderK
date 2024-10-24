@@ -33,7 +33,7 @@ module.exports = async (srv) => {
         // Verifica se existem itens para processar
         if (items && items.length > 0) {
             for (const item of items) {
-                const material = await SELECT.one.from(Materials).where({ name: item.material });
+                const material = await SELECT.one.from(Materials).where({ ID: item.material });
                 if (!material) {
                     return (`Material ${item.material} não encontrado`);
                 }
