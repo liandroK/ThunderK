@@ -24,6 +24,6 @@ POST http://localhost:4004/odata/v4/service/aprovadores
 Content-Type: application/json
 
 {
-  "vendor": "liandrocruz1@kpmg.com",
-  "approver": "bernadettefernandes1@kpmg.com"
+  "vendor": "joao@kpmg.com",
+  "approver": "bernadettefernandes@kpmg.com"
 }

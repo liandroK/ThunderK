@@ -22,7 +22,7 @@ module.exports = async (srv) => {
         // Obter o aprovador
         const approver = await SELECT.from(Approvers).where({ vendor: email_vendor });
         if (!approver || approver.length === 0) {
-            return `Aprovador com email ${email_vendor} não encontrado.`;
+            return req.reject(406, `Vendedor com email ${email_vendor} não encontrado.`);
         }
 
         let newSale = {};
@@ -35,12 +35,12 @@ module.exports = async (srv) => {
             for (const item of items) {
                 const material = await SELECT.one.from(Materials).where({ ID: item.material });
                 if (!material) {
-                    return (`Material ${item.material} não encontrado`);
+                    return req.reject(406,`Material ${item.material} não encontrado`);
                 }
 
                 // Verifica stock disponível
                 if (item.qtd > material.stock) {
-                    return (`Quantidade pedida (${item.qtd}) ultrapassa o stock disponível (${material.stock}) para o material ${item.material}.`);
+                    return req.reject(406,`Quantidade pedida (${item.qtd}) ultrapassa o stock disponível (${material.stock}) para o material ${item.material}.`);
                 }
 
                 // Calcula valores do item
@@ -87,7 +87,7 @@ module.exports = async (srv) => {
 
         // Insere a nova sale
         const result = await INSERT(newSale).into(Sales);
-        return `Sales order ${newSale.salesID} criada com sucesso!`;
+        return req.reply(202, `Sales order ${newSale.salesID} criada com sucesso!`);
     });
 
     // Handler para atualizar o status de uma venda
@@ -117,11 +117,12 @@ module.exports = async (srv) => {
     srv.on('CREATE', 'aprovadores', async (req) => {
         const { vendor, approver } = req.data;
     
-       
+        // Verifica se o email do vendedor é válido
         if (!validateEmail(vendor)) {
             return req.error(400, `O email do vendedor '${vendor}' não é válido.`);
         }
     
+        // Verifica se o email do aprovador é válido
         if (!validateEmail(approver)) {
             return req.error(400, `O email do aprovador '${approver}' não é válido.`);
         }
@@ -131,26 +132,38 @@ module.exports = async (srv) => {
             return req.error(400, 'O email do vendedor e do aprovador não podem ser iguais.');
         }
     
-        // Chama a função que liga à API SAP
         try {
-            const users = await triggerDestination(); 
+            // Verifica se o vendedor já existe na tabela app.salesK.Approvers
+            const existingVendor = await SELECT.one.from('app.salesK.Approvers').where({ vendor });
+    
+            if (existingVendor) {
+                // Se o vendedor já existir, retorna erro
+                return req.error(400, `O vendedor '${vendor}' já existe na tabela de aprovadores.`);
+            }
+    
+            // Chama a função que liga à API SAP
+            const users = await triggerDestination();
     
             // Verifica se existe algum utilizador com userName igual ao approver
             const userExists = users.some(user => user.userName === approver);
     
-            if (userExists) {
-                // Se o utilizador existir, prossegue com a criação do registo
-                return req.data;
-            } else {
-                // Caso contrário, retorna um erro
+            if (!userExists) {
+                // Caso o aprovador não exista na API SAP, retorna erro
                 return req.error(400, `O aprovador '${approver}' não existe na API SAP.`);
             }
     
+            // Se todas as validações passarem, insere o novo registo na tabela app.salesK.Approvers
+            await INSERT.into('app.salesK.Approvers').entries({ vendor, approver });
+    
+            // Retorna a confirmação de que o registo foi criado com sucesso
+            return req.reply({ message: `O vendedor '${vendor}' e o aprovador '${approver}' foram adicionados com sucesso.` });
+    
         } catch (e) {
-            // Caso ocorra um erro ao conectar à API
-            return req.error(500, 'Erro ao conectar à API de autenticação.');
+            // Caso ocorra um erro ao conectar à API ou na base de dados
+            return req.error(500, 'Erro ao conectar à API de autenticação ou verificar a tabela.');
         }
     });
+    
     
 
     // Handler para leitura de aprovadores

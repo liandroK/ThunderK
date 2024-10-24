@@ -28,6 +28,7 @@ modules:
     requires:
       - name: sales-auth
       - name: sales-db
+      - name: sales-destination
 
   - name: sales-db-deployer
     type: hdb
@@ -68,3 +69,21 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
+  - name: sales-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+      HTML5.DynamicDestination: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: auth_api
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://api.authentication.us10.hana.ondemand.com
+          existing_destinations_policy: update
+      version: 1.0.0
+      service: destination
+      service-name: salescap-destination-service
+      service-plan: lite   
