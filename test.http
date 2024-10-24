@@ -17,3 +17,13 @@ Content-Type: application/json
     ]
   }
 }
+
+
+### create People
+POST http://localhost:4004/odata/v4/service/aprovadores
+Content-Type: application/json
+
+{
+  "vendor": "liandrocruz@outlook.pt",
+  "approver": "liandrocruz@outlook.pt"
+}
