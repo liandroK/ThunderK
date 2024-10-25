@@ -1,5 +1,6 @@
 ### read People
-GET http://localhost:4004/odata/v4/service/artigos?name=teste
+GET http://localhost:4004/odata/v4/service/aprovadores?$filter=vendor eq 'testeemail@email.com'
+
 
 ### create People
 POST http://localhost:4004/odata/v4/service/create_salesorder

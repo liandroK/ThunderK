@@ -87,7 +87,11 @@ module.exports = async (srv) => {
 
         // Insere a nova sale
         const result = await INSERT(newSale).into(Sales);
-        return req.reply(202, `Sales order ${newSale.salesID} criada com sucesso!`);
+        return req.send({
+            status: 202,
+            message: `Sales order ${newSale.salesID} criada com sucesso!`,
+            salesID: newSale.salesID
+        });
     });
 
     // Handler para atualizar o status de uma venda
@@ -172,7 +176,7 @@ module.exports = async (srv) => {
 
         // Verifica se é para procurar por vendor ou approver
         if (vendor) {
-            const vendorFound = await SELECT.one.from(Approvers).where({ vendor });
+            const vendorFound = await SELECT.one.from(Approvers).where({ vendor, approver });
             if (!vendorFound) {
                 return ({
                     code: 400,
@@ -184,7 +188,7 @@ module.exports = async (srv) => {
         }
 
         if (approver) {
-            const approverFound = await SELECT.one.from(Approvers).where({ approver });
+            const approverFound = await SELECT.one.from(Approvers).where({ approver, vendor });
             if (!approverFound) {
                 return ({
                     code: 400,
