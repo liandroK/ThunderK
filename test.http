@@ -1,5 +1,13 @@
 ### read People
-GET http://localhost:4004/odata/v4/service/aprovadores?$filter=vendor eq 'testeemail@email.com'
+GET http://localhost:4004/odata/v4/service/getSalesForPerson(email='liandrocruz@kpmg.com')
+
+### read People
+GET http://localhost:4004/odata/v4/service/getUsers
+
+
+
+### read People
+GET http://localhost:4004/odata/v4/service/aprovadores
 
 
 ### create People
@@ -21,10 +29,16 @@ Content-Type: application/json
 
 
 ### create People
-POST http://localhost:4004/odata/v4/service/aprovadores
+POST http://localhost:4004/odata/v4/service/createUserInSAP
 Content-Type: application/json
 
 {
-  "vendor": "joao@kpmg.com",
-  "approver": "bernadettefernandes@kpmg.com"
+  "email": "FUNCIONA@kpmg.com",
+  "groupId": "042452d1-b94f-4a9f-aa6e-55a8df8aa859"
 }
+
+
+
+
+### GET
+GET auth_api.dest/Users

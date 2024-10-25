@@ -81,7 +81,7 @@ resources:
             Name: auth_api
             ProxyType: Internet
             Type: HTTP
-            URL: https://api.authentication.us10.hana.ondemand.com
+            URL: https://aqyqq8bhx.trial-accounts.ondemand.com/scim/
           existing_destinations_policy: update
       version: 1.0.0
       service: destination
