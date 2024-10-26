@@ -1,15 +1,22 @@
-### read People
+### GET - Sales for a specific person
 GET http://localhost:4004/odata/v4/service/getSalesForPerson(email='liandrocruz@kpmg.com')
 
-### read People
+### GET - List all users
 GET http://localhost:4004/odata/v4/service/getUsers
 
-
-
-### read People
+### GET - List all approvers
 GET http://localhost:4004/odata/v4/service/aprovadores
 
+### GET - List all Materials
+GET http://localhost:4004/odata/v4/service/artigos
 
+### GET - List all SalesItems
+GET http://localhost:4004/odata/v4/service/salesItems
+
+### GET - List all Materials
+GET http://localhost:4004/odata/v4/service/sales
+
+---
 ### create People
 POST http://localhost:4004/odata/v4/service/create_salesorder
 Content-Type: application/json
@@ -27,18 +34,11 @@ Content-Type: application/json
   }
 }
 
-
 ### create People
 POST http://localhost:4004/odata/v4/service/createUserInSAP
 Content-Type: application/json
 
 {
-  "email": "FUNCIONA@kpmg.com",
-  "groupId": "042452d1-b94f-4a9f-aa6e-55a8df8aa859"
+  "email": "Emanuelm@kpmg.com",
+  "userType": "approver"
 }
-
-
-
-
-### GET
-GET auth_api.dest/Users

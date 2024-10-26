@@ -47,7 +47,7 @@ service Sales.service {
 
     action getUsers() returns array of User;
 
-    action createUserInSAP(email: Email, groupId: String) returns User;
+    action createUserInSAP(email: Email, userType: String) returns User;
 
     function getSalesForPerson(email: Email) returns array of Sales;
   

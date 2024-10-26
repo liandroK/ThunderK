@@ -39,7 +39,6 @@ module.exports = async (srv) => {
                 email: user.emails?.[0]?.value || ''
             }));
     
-            console.log("Usuários obtidos:", users); // Verifica no log que os dados estão corretos
             return users;
     
         } catch (error) {
@@ -48,106 +47,155 @@ module.exports = async (srv) => {
         }
     });
 
-    // Handler para criar um novo usuário na API e adicioná-lo a um grupo
-    srv.on('createUserInSAP', async (req) => {
-        const { email, groupId } = req.data;
-    
-        if (!validateEmail(email)) {
-            return req.error(400, `O email '${email}' não é válido.`);
+// Handler para criar um novo usuário na API e adicioná-lo a um grupo
+srv.on('createUserInSAP', async (req) => {
+    const { email, userType } = req.data; // userType pode ser "vendor" ou "approver"
+
+    if (!validateEmail(email)) {
+        return req.error(400, `O email '${email}' não é válido.`);
+    }
+
+    if (!userType || (userType !== "vendor" && userType !== "approver")) {
+        return req.error(400, "O tipo de utilizador deve ser 'vendor' ou 'approver'.");
+    }
+
+    try {
+        const auth = await cds.connect.to('auth_api'); // Conecta à API uma vez
+        
+        // Obtém o groupId dinamicamente com base no tipo de utilizador
+        const groupId = await getGroupIdForUserType(userType, auth);
+        if (!groupId) {
+            return req.error(404, `Group ID para o tipo '${userType}' não encontrado.`);
         }
-    
-        try {
-            // Chama a função para criar o usuário e obter a resposta
-            const res = await createUserInSAP(email, groupId);
-    
-            console.log("Resposta da criação do utilizador:", res); // Log da resposta completa
-            // Retorna os detalhes do usuário criado
-            return {
-                id: res.id,
-                userName: res.userName,
-                givenName: res.name?.givenName || '',
-                familyName: res.name?.familyName || '',
-                email: res.emails?.[0]?.value || ''
-            };
-    
-        } catch (error) {
-            console.error('Erro ao criar o utilizador na API SAP:', error); // Log detalhado do erro
-            return req.error(500, error.message || 'Erro ao criar o utilizador na API SAP.');
+
+        // Cria o usuário na API SAP
+        const res = await createUserInSAP(email, groupId, auth);
+
+        // Retorna os detalhes do usuário criado
+        return {
+            id: res.id,
+            userName: res.userName,
+            givenName: res.name?.givenName || '',
+            familyName: res.name?.familyName || '',
+            email: res.emails?.[0]?.value || ''
+        };
+
+    } catch (error) {
+        console.error('Erro ao criar o utilizador na API SAP:', error);
+        return req.error(500, error.message || 'Erro ao criar o utilizador na API SAP.');
+    }
+});
+
+// Função auxiliar para obter o groupId com base no tipo de utilizador
+async function getGroupIdForUserType(userType, auth) {
+    try {
+        // Faz um GET à rota de grupos para obter todos os grupos
+        const response = await auth.send({
+            method: 'GET',
+            path: '/Groups',
+            headers: {
+                Accept: 'application/scim+json'
+            }
+        });
+
+        const groups = response.Resources;
+        if (!groups || groups.length === 0) {
+            console.error("Nenhum grupo encontrado na resposta da API.");
+            throw new Error("Nenhum grupo encontrado na resposta da API.");
         }
-    });
-    
-    // Função genérica para criar usuários na API SAP e adicioná-los a um grupo
-    async function createUserInSAP(email, groupId) {
-        const [givenName, familyName] = email.split('@')[0].split('.');
-        const payload = {
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User",
-                "urn:ietf:params:scim:schemas:extension:sap:2.0:User"
-            ],
-            "userName": email,
-            "name": {
-                "givenName": givenName || '',
-                "familyName": familyName || ''
+
+        // Procura o grupo com base no `displayName` para "vendor" ou "approver"
+        const group = groups.find(g => {
+            if (userType === 'vendor') {
+                return g.displayName === 'Vendedores';
+            } else if (userType === 'approver') {
+                return g.displayName === 'Aprovadores';
+            }
+        });
+
+        if (!group) {
+            console.error(`Grupo correspondente ao tipo '${userType}' não encontrado.`);
+        }
+        return group ? group.id : null;
+
+    } catch (error) {
+        console.error("Erro ao obter o groupId:", error);
+        throw new Error("Erro ao obter o groupId.");
+    }
+}
+
+// Função genérica para criar usuários na API SAP e adicioná-los a um grupo
+async function createUserInSAP(email, groupId, auth) {
+    const [givenName, familyName] = email.includes('.')
+        ? email.split('@')[0].split('.')
+        : ['Nome', 'Sobrenome'];  // Default caso o email não siga o padrão esperado
+
+    const payload = {
+        "schemas": [
+            "urn:ietf:params:scim:schemas:core:2.0:User",
+            "urn:ietf:params:scim:schemas:extension:sap:2.0:User"
+        ],
+        "userName": email,
+        "name": {
+            "givenName": givenName || '',
+            "familyName": familyName || ''
+        },
+        "displayName": givenName,
+        "userType": "public",
+        "active": true,
+        "emails": [
+            {
+                "value": email,
+                "primary": true
+            }
+        ]
+    };
+
+    try {
+        // Envia o pedido para criar o utilizador
+        const res = await auth.send({
+            method: 'POST',
+            path: '/Users',
+            headers: {
+                Accept: 'application/scim+json',
+                'Content-Type': 'application/scim+json'
             },
-            "displayName": givenName,
-            "userType": "public",
-            "active": true,
-            "emails": [
+            data: JSON.stringify(payload)
+        });
+
+        if (!res.id) throw new Error("Erro na criação do utilizador: ID ausente na resposta.");
+
+        // Adiciona o usuário ao grupo especificado
+        const userId = res.id;
+        const groupPayload = {
+            schemas: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+            Operations: [
                 {
-                    "value": email,
-                    "primary": true
+                    op: "add",
+                    path: "members",
+                    value: [{ value: userId }]
                 }
             ]
         };
-    
-        try {
-            const auth = await cds.connect.to('auth_api');
-    
-            // Envia o pedido para criar o utilizador
-            const res = await auth.send({
-                method: 'POST',
-                path: '/Users',
-                headers: {
-                    Accept: 'application/scim+json',
-                    'Content-Type': 'application/scim+json'
-                },
-                data: JSON.stringify(payload)
-            });
-    
-            console.log("Resposta do POST para criar utilizador:", res); // Log da resposta do POST
-    
-            // Adiciona o usuário ao grupo especificado
-            const userId = res.id;
-            const groupPayload = {
-                schemas: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-                Operations: [
-                    {
-                        op: "add",
-                        path: "members",
-                        value: [{ value: userId }]
-                    }
-                ]
-            };
-    
-            // Envia o pedido para adicionar o usuário ao grupo
-            const groupRes = await auth.send({
-                method: 'PATCH',
-                path: `/Groups/${groupId}`,
-                headers: {
-                    Accept: 'application/scim+json',
-                    'Content-Type': 'application/scim+json'
-                },
-                data: JSON.stringify(groupPayload)
-            });
-    
-            console.log("Resposta do PATCH para adicionar ao grupo:", groupRes); // Log da resposta do PATCH
-            return res;
-    
-        } catch (error) {
-            console.error('Erro ao criar ou adicionar o utilizador ao grupo na API SAP:', error);
-            throw new Error('Erro ao criar o utilizador na API SAP.');
-        }
+
+        // Envia o pedido para adicionar o usuário ao grupo
+        const groupRes = await auth.send({
+            method: 'PATCH',
+            path: `/Groups/${groupId}`,
+            headers: {
+                Accept: 'application/scim+json',
+                'Content-Type': 'application/scim+json'
+            },
+            data: JSON.stringify(groupPayload)
+        });
+
+        return res;
+
+    } catch (error) {
+        console.error('Erro ao criar ou adicionar o utilizador ao grupo na API SAP:', error);
+        throw new Error('Erro ao criar o utilizador na API SAP.');
     }
+}
 
 
     // Handler para a criação de sales order
@@ -208,7 +256,7 @@ module.exports = async (srv) => {
             }
         }
 
-        const result = await INSERT(newSale).into(Sales);
+        await INSERT(newSale).into(Sales);
         return req.send({
             status: 202,
             message: `Sales order ${newSale.salesID} criada com sucesso!`,
