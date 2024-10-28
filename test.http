@@ -23,11 +23,11 @@ Content-Type: application/json
 
 {
   "sales": {
-    "email_vendor": "rodrigo@kpmg.com",
+    "email_vendor": "bernadettefernandes@kpmg.com",
     "email_comprador": "liandrocruz@kpmg.com",
     "items": [
       {
-        "material": "Tablet",
+        "material": "4b361b8b-fef2-46cd-8a03-cfe57da618b7",
         "qtd": 1
       }
     ]
@@ -41,4 +41,23 @@ Content-Type: application/json
 {
   "email": "Emanuelm@kpmg.com",
   "userType": "approver"
+}
+
+###Criar aprovadores
+POST http://localhost:4004/odata/v4/service/aprovadores
+Content-Type: application/json
+
+{
+  "approver": "liandrocruz1@kpmg.com",
+  "vendor": "rjjpereira1@kpmg.com"
+}
+
+
+###Criar aprovadores
+POST http://localhost:4004/odata/v4/service/updateStatus
+Content-Type: application/json
+
+{
+  "id": "71",
+  "status": "Aceite"
 }

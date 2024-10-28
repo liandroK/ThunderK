@@ -1,4 +1,10 @@
+// interactions_srv.js
 const cds = require('@sap/cds');
+const {
+    validateEmail,
+    createUserInSAP,
+    getUsers
+} = require('./userGroups'); 
 
 module.exports = async (srv) => {
     const db = await cds.connect.to('db');
@@ -7,196 +13,56 @@ module.exports = async (srv) => {
     const SalesItems = db.entities['app.salesK.SalesItems'];
     const Materials = db.entities['app.salesK.Materials'];
 
-    // Função para validar emails usando regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Handler para criar aprovadores
+    srv.on('CREATE', 'aprovadores', async (req) => {
+        const { vendor, approver } = req.data;
 
-    function validateEmail(email) {
-        return emailRegex.test(email);
-    }
+        // Validação dos emails
+        if (!validateEmail(vendor) || !validateEmail(approver)) {
+            return req.error(400, 'Os emails de vendor e approver precisam ser válidos.');
+        }
+        if (vendor === approver) {
+            return req.error(400, 'Os emails de vendor e approver não podem ser iguais.');
+        }
 
+        try {
+            // Obter lista de utilizadores atuais da API usando getUsers
+            const users = await getUsers();
+
+            // Verificar se o vendor e approver existem na API SAP
+            const vendorExistsInSAP = users.some(user => user.email === vendor);
+            const approverExistsInSAP = users.some(user => user.email === approver);
+
+            // Verificar se já existe uma entrada para o par vendor-approver na tabela Approvers
+            const approverRecord = await SELECT.one.from(Approvers).where({ vendor, approver });
+            if (approverRecord) {
+                return req.error(400, 'O par vendor e approver já existe na tabela Approvers.');
+            }
+
+            // Se o vendor não existir na API SAP, cria-o
+            if (!vendorExistsInSAP) {
+                await createUserInSAP(vendor, 'vendor', await cds.connect.to('auth_api'));
+            }
+
+            // Se o approver não existir na API SAP, cria-o
+            if (!approverExistsInSAP) {
+                await createUserInSAP(approver, 'approver', await cds.connect.to('auth_api'));
+            }
+
+            // Inserir o novo par na tabela Approvers
+            await INSERT.into(Approvers).entries({ vendor, approver });
+            return req.reply({ message: `Vendor '${vendor}' e approver '${approver}' foram adicionados com sucesso.` });
+
+        } catch (error) {
+            console.error('Erro ao conectar à API de autenticação ou criar utilizador:', error);
+            return req.error(500, 'Erro ao conectar à API de autenticação ou criar utilizador.');
+        }
+    });
+
+    // Handler para atualização de status de sales order
     srv.on('updateStatus', async (req) => {
-        return await UPDATE(Sales).set({ status: req.data.status }).where({ ID: req.data.id });
+        return await UPDATE(Sales).set({ status: req.data.status }).where({ salesID: req.data.id });
     });
-
-    // Handler para obter os utilizadores diretamente da API `auth_api`
-    srv.on('getUsers', async (req) => {
-        try {
-            const auth = await cds.connect.to('auth_api');
-            const res = await auth.send({
-                method: 'GET',
-                path: '/Users',
-                headers: {
-                    Accept: 'application/scim+json',
-                    'Content-Type': 'application/scim+json'
-                }
-            });
-
-            // Ajuste para a chave correta "Resources" na resposta
-            const users = (res.Resources || []).map(user => ({
-                userName: user.userName || '',
-                givenName: user.name?.givenName || '',
-                familyName: user.name?.familyName || '',
-                email: user.emails?.[0]?.value || ''
-            }));
-
-            return users;
-
-        } catch (error) {
-            console.error('Erro ao obter utilizadores:', error);
-            return req.error(500, 'Erro ao obter utilizadores');
-        }
-    });
-
-    // Handler para criar um novo usuário na API e adicioná-lo a um grupo
-    srv.on('createUserInSAP', async (req) => {
-        const { email, userType } = req.data; // userType pode ser "vendor" ou "approver"
-
-        if (!validateEmail(email)) {
-            return req.error(400, `O email '${email}' não é válido.`);
-        }
-
-        if (!userType || (userType !== "vendor" && userType !== "approver")) {
-            return req.error(400, "O tipo de utilizador deve ser 'vendor' ou 'approver'.");
-        }
-
-        try {
-            const auth = await cds.connect.to('auth_api'); // Conecta à API uma vez
-
-            // Obtém o groupId dinamicamente com base no tipo de utilizador
-            const groupId = await getGroupIdForUserType(userType, auth);
-            if (!groupId) {
-                return req.error(404, `Group ID para o tipo '${userType}' não encontrado.`);
-            }
-
-            // Cria o usuário na API SAP
-            const res = await createUserInSAP(email, groupId, auth);
-
-            // Retorna os detalhes do usuário criado
-            return {
-                id: res.id,
-                userName: res.userName,
-                givenName: res.name?.givenName || '',
-                familyName: res.name?.familyName || '',
-                email: res.emails?.[0]?.value || ''
-            };
-
-        } catch (error) {
-            console.error('Erro ao criar o utilizador na API SAP:', error);
-            return req.error(500, error.message || 'Erro ao criar o utilizador na API SAP.');
-        }
-    });
-
-    // Função auxiliar para obter o groupId com base no tipo de utilizador
-    async function getGroupIdForUserType(userType, auth) {
-        try {
-            // Faz um GET à rota de grupos para obter todos os grupos
-            const response = await auth.send({
-                method: 'GET',
-                path: '/Groups',
-                headers: {
-                    Accept: 'application/scim+json'
-                }
-            });
-
-            const groups = response.Resources;
-            if (!groups || groups.length === 0) {
-                console.error("Nenhum grupo encontrado na resposta da API.");
-                throw new Error("Nenhum grupo encontrado na resposta da API.");
-            }
-
-            // Procura o grupo com base no `displayName` para "vendor" ou "approver"
-            const group = groups.find(g => {
-                if (userType === 'vendor') {
-                    return g.displayName === 'Vendedores';
-                } else if (userType === 'approver') {
-                    return g.displayName === 'Aprovadores';
-                }
-            });
-
-            if (!group) {
-                console.error(`Grupo correspondente ao tipo '${userType}' não encontrado.`);
-            }
-            return group ? group.id : null;
-
-        } catch (error) {
-            console.error("Erro ao obter o groupId:", error);
-            throw new Error("Erro ao obter o groupId.");
-        }
-    }
-
-    // Função genérica para criar usuários na API SAP e adicioná-los a um grupo
-    async function createUserInSAP(email, groupId, auth) {
-        const [givenName, familyName] = email.includes('.')
-            ? email.split('@')[0].split('.')
-            : ['Nome', 'Sobrenome'];  // Default caso o email não siga o padrão esperado
-
-        const payload = {
-            "schemas": [
-                "urn:ietf:params:scim:schemas:core:2.0:User",
-                "urn:ietf:params:scim:schemas:extension:sap:2.0:User"
-            ],
-            "userName": email,
-            "name": {
-                "givenName": givenName || '',
-                "familyName": familyName || ''
-            },
-            "displayName": givenName,
-            "userType": "public",
-            "active": true,
-            "emails": [
-                {
-                    "value": email,
-                    "primary": true
-                }
-            ]
-        };
-
-        try {
-            // Envia o pedido para criar o utilizador
-            const res = await auth.send({
-                method: 'POST',
-                path: '/Users',
-                headers: {
-                    Accept: 'application/scim+json',
-                    'Content-Type': 'application/scim+json'
-                },
-                data: JSON.stringify(payload)
-            });
-
-            if (!res.id) throw new Error("Erro na criação do utilizador: ID ausente na resposta.");
-
-            // Adiciona o usuário ao grupo especificado
-            const userId = res.id;
-            const groupPayload = {
-                schemas: ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
-                Operations: [
-                    {
-                        op: "add",
-                        path: "members",
-                        value: [{ value: userId }]
-                    }
-                ]
-            };
-
-            // Envia o pedido para adicionar o usuário ao grupo
-            const groupRes = await auth.send({
-                method: 'PATCH',
-                path: `/Groups/${groupId}`,
-                headers: {
-                    Accept: 'application/scim+json',
-                    'Content-Type': 'application/scim+json'
-                },
-                data: JSON.stringify(groupPayload)
-            });
-
-            return res;
-
-        } catch (error) {
-            console.error('Erro ao criar ou adicionar o utilizador ao grupo na API SAP:', error);
-            throw new Error('Erro ao criar o utilizador na API SAP.');
-        }
-    }
-
 
     // Handler para a criação de sales order
     srv.on('create_salesorder', async (req) => {
@@ -257,42 +123,11 @@ module.exports = async (srv) => {
         }
 
         await INSERT(newSale).into(Sales);
-        return req.send({
+        return req.reply({
             status: 202,
             message: `Sales order ${newSale.salesID} criada com sucesso!`,
             salesID: newSale.salesID
         });
-    });
-
-    // Handler para criar aprovadores
-    srv.on('CREATE', 'aprovadores', async (req) => {
-        const { vendor, approver } = req.data;
-
-        if (!validateEmail(vendor) || !validateEmail(approver)) {
-            return req.error(400, 'Emails de vendedor e aprovador precisam ser válidos.');
-        }
-        if (vendor === approver) {
-            return req.error(400, 'O email do vendedor e do aprovador não podem ser iguais.');
-        }
-
-        try {
-            const users = await fetchUsersFromAPI();
-            const vendorExists = users.some(user => user.userName === vendor);
-            if (!vendorExists) {
-                await createUserInSAP(vendor, 'ID_DO_GRUPO_VENDOR');
-            }
-
-            const approverExists = users.some(user => user.userName === approver);
-            if (!approverExists) {
-                await createUserInSAP(approver, 'ID_DO_GRUPO_APPROVER');
-            }
-
-            await INSERT.into(Approvers).entries({ vendor, approver });
-            return req.reply({ message: `Vendedor '${vendor}' e aprovador '${approver}' adicionados.` });
-
-        } catch (e) {
-            return req.error(500, 'Erro ao conectar à API de autenticação.');
-        }
     });
 
     // Implementação da função getSalesForPerson
@@ -328,4 +163,3 @@ module.exports = async (srv) => {
         return uniqueSales;
     });
 };
-
